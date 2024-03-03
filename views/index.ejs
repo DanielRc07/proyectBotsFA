@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila Virtual</title>
+    <!-- Agregar Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Agregar CSS personalizado -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            color: #0000; /* Cambiar color de texto a blanco */
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body style="background: url('/background.jpg');"> <!-- Usar imagen de fondo -->
+    <div class="container">
+        <% if (isActive) { %>
+            <h1 style="color: #0000;">Tu posición en la fila virtual es: <%= position %></h1>
+        <% } else { %>
+            <div class="message" style="color: #0000;">
+                <p>Vuelve pronto, la fila virtual aún no está activa.</p>
+                <p>La fila se abrirá a las <%= openingTime %> horas.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Agregar Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
