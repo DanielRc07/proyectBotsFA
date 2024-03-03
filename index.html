@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Queue</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .position-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .position-text {
+            font-size: 24px;
+            color: #000;
+        }
+        .message-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .message-text {
+            font-size: 20px;
+            color: #999;
+        }
+        .custom-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .custom-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-container" id="positionContainer">
+        <!-- La posición en la fila virtual se mostrará aquí -->
+    </div>
+    <div class="message-container" id="messageContainer" style="display: none;">
+        <!-- El mensaje se mostrará aquí si la fila virtual no está activa -->
+    </div>
+
+    <button id="showPositionButton" class="custom-button" onclick="mostrarSiguientePosicion()">Mostrar siguiente posición</button>
+
+    <script>
+        // Recuperar la posición guardada del almacenamiento local al cargar la página
+        let posicionActual = localStorage.getItem('posicionEnFila') || 0;
+        
+        const openingTime = '10:00 AM'; // Supongamos un tiempo de apertura estático
+
+        function mostrarSiguientePosicion() {
+            const isActive = true; // Supongamos que está activo
+            const showPositionButton = document.getElementById('showPositionButton');
+
+            // Incrementar la posición en 1 y mostrarla
+            posicionActual++;
+            mostrarPosicion(posicionActual, isActive);
+
+            // Guardar la nueva posición en el almacenamiento local
+            localStorage.setItem('posicionEnFila', posicionActual);
+
+            // Ocultar el botón después de mostrar la posición
+            showPositionButton.style.display = 'none';
+        }
+
+        function mostrarPosicion(position, isActive) {
+            const positionContainer = document.getElementById('positionContainer');
+            const messageContainer = document.getElementById('messageContainer');
+
+            if (isActive) {
+                positionContainer.style.display = 'block';
+                messageContainer.style.display = 'none';
+
+                positionContainer.innerHTML = `<p class="position-text">Tu posición en la fila virtual es: ${position}</p>`;
+            } else {
+                positionContainer.style.display = 'none';
+                messageContainer.style.display = 'block';
+
+                messageContainer.innerHTML = `
+                    <p class="message-text">Vuelve pronto, la fila virtual aún no está activa.</p>
+                    <p class="message-text">La fila se abrirá a las ${openingTime} horas.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
