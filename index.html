@@ -6,21 +6,31 @@
     <title>Virtual Queue</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .position-container {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+        }
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        .fila-en-proceso {
+            font-size: 24px;
+            color: #007bff;
+        }
+        .position-container, .message-container {
             text-align: center;
             padding: 20px;
         }
-        .position-text {
+        .position-text, .message-text {
             font-size: 24px;
             color: #000;
-        }
-        .message-container {
-            text-align: center;
-            padding: 20px;
-        }
-        .message-text {
-            font-size: 20px;
-            color: #999;
         }
         .custom-button {
             background-color: #007bff;
@@ -29,6 +39,7 @@
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
+            display: none; /* Botón oculto inicialmente */
         }
         .custom-button:hover {
             background-color: #0056b3;
@@ -36,6 +47,11 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="title">Fila Virtual</div>
+        <div class="fila-en-proceso">En proceso</div>
+    </div>
+
     <div class="position-container" id="positionContainer">
         <!-- La posición en la fila virtual se mostrará aquí -->
     </div>
@@ -43,47 +59,72 @@
         <!-- El mensaje se mostrará aquí si la fila virtual no está activa -->
     </div>
 
-    <button id="showPositionButton" class="custom-button" onclick="mostrarSiguientePosicion()">Mostrar siguiente posición</button>
+    <button id="showPositionButton" class="custom-button" onclick="mostrarSiguientePosicion()">Ver posición en fila</button>
 
     <script>
-        // Recuperar la posición guardada del almacenamiento local al cargar la página
-        let posicionActual = localStorage.getItem('posicionEnFila') || 0;
-        
-        const openingTime = '10:00 AM'; // Supongamos un tiempo de apertura estático
+        const openingTime = '12:00 PM'; // Supongamos un tiempo de apertura estático
+        let posicionActual = 0;
 
-        function mostrarSiguientePosicion() {
-            const isActive = true; // Supongamos que está activo
-            const showPositionButton = document.getElementById('showPositionButton');
+        window.onload = () => {
+            // Recuperar la posición guardada del almacenamiento local al cargar la página
+            const storedPosition = localStorage.getItem('posicionEnFila');
+            if (storedPosition !== null) {
+                posicionActual = parseInt(storedPosition);
+            }
+            mostrarPosicion();
+        };
 
-            // Incrementar la posición en 1 y mostrarla
-            posicionActual++;
-            mostrarPosicion(posicionActual, isActive);
-
-            // Guardar la nueva posición en el almacenamiento local
-            localStorage.setItem('posicionEnFila', posicionActual);
-
-            // Ocultar el botón después de mostrar la posición
-            showPositionButton.style.display = 'none';
-        }
-
-        function mostrarPosicion(position, isActive) {
+        function mostrarPosicion() {
             const positionContainer = document.getElementById('positionContainer');
             const messageContainer = document.getElementById('messageContainer');
+            const showPositionButton = document.getElementById('showPositionButton');
+
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            const currentMinute = currentTime.getMinutes();
+            const openingHour = parseInt(openingTime.split(':')[0]);
+            const openingMinute = parseInt(openingTime.split(':')[1]);
+
+            const isActive = currentHour > openingHour || (currentHour === openingHour && currentMinute >= openingMinute);
 
             if (isActive) {
                 positionContainer.style.display = 'block';
                 messageContainer.style.display = 'none';
 
-                positionContainer.innerHTML = `<p class="position-text">Tu posición en la fila virtual es: ${position}</p>`;
+                positionContainer.innerHTML = `<p class="position-text">Tu posición en la fila virtual es: ${posicionActual}</p>`;
+
+                // Ocultar el botón después de que se presiona una vez
+                if (!localStorage.getItem('buttonClicked')) {
+                    showPositionButton.style.display = 'block';
+                } else {
+                    showPositionButton.style.display = 'none';
+                }
             } else {
                 positionContainer.style.display = 'none';
                 messageContainer.style.display = 'block';
+                showPositionButton.style.display = 'none';
 
                 messageContainer.innerHTML = `
                     <p class="message-text">Vuelve pronto, la fila virtual aún no está activa.</p>
-                    <p class="message-text">La fila se abrirá a las ${openingTime} horas.</p>
+                    <p class="message-text">La fila se abrirá a las ${openingTime}.</p>
                 `;
             }
+        }
+
+        function mostrarSiguientePosicion() {
+            // Incrementar la posición en 1 y mostrarla
+            posicionActual++;
+            localStorage.setItem('posicionEnFila', posicionActual);
+            mostrarPosicion();
+
+            // Marcar el botón como presionado en el almacenamiento local
+            localStorage.setItem('buttonClicked', true);
+        }
+
+        // Manejar el evento cuando la página se cierra o se recarga
+        window.onbeforeunload = () => {
+            // Limpiar el estado del botón al cerrar la página
+            localStorage.removeItem('buttonClicked');
         }
     </script>
 </body>
