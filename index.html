@@ -59,11 +59,12 @@
         <!-- El mensaje se mostrará aquí si la fila virtual no está activa -->
     </div>
 
-    <button id="showPositionButton" class="custom-button" onclick="mostrarSiguientePosicion()">Ver posición en fila</button>
+    <button id="showPositionButton" class="custom-button" onclick="mostrarPosicion()">Ver posición en fila</button>
 
     <script>
         const openingTime = '12:00 PM'; // Supongamos un tiempo de apertura estático
         let posicionActual = 0;
+        let buttonClicked = false;
 
         window.onload = () => {
             // Recuperar la posición guardada del almacenamiento local al cargar la página
@@ -93,8 +94,8 @@
 
                 positionContainer.innerHTML = `<p class="position-text">Tu posición en la fila virtual es: ${posicionActual}</p>`;
 
-                // Ocultar el botón después de que se presiona una vez
-                if (!localStorage.getItem('buttonClicked')) {
+                // Mostrar el botón solo si no se ha hecho clic antes
+                if (!buttonClicked) {
                     showPositionButton.style.display = 'block';
                 } else {
                     showPositionButton.style.display = 'none';
@@ -117,14 +118,18 @@
             localStorage.setItem('posicionEnFila', posicionActual);
             mostrarPosicion();
 
-            // Marcar el botón como presionado en el almacenamiento local
-            localStorage.setItem('buttonClicked', true);
+            // Marcar el botón como presionado
+            buttonClicked = true;
         }
 
         // Manejar el evento cuando la página se cierra o se recarga
         window.onbeforeunload = () => {
             // Limpiar el estado del botón al cerrar la página
-            localStorage.removeItem('buttonClicked');
+            if (buttonClicked) {
+                localStorage.setItem('buttonClicked', true);
+            } else {
+                localStorage.removeItem('buttonClicked');
+            }
         }
     </script>
 </body>
